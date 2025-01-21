@@ -32,49 +32,69 @@ public class ViperslidePIDSubsystem {
         viperL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         viperR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         viperR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        viperR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        viperL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         setPoint = 0.5;
     }
 
-    public void disableperiodic() {
+    public void disableperiodic () {
         telemetry.addData("viperL",viperL.getCurrentPosition());
         telemetry.addData("viperR",viperR.getCurrentPosition());
+        //telemetry.addData()
 
     }
 
+    public void parriba () {
+        setPoint = 2450;
+    }
+
+    public void alpiso () {
+        setPoint = 2;
+    }
+
+    public void baja () {
+        setPoint = setPoint - 5.5;
+    }
+
+    public void sube () {
+        setPoint = setPoint + 5.5;
+    }
+
+    public void PURPLEEE () {
+        setPoint = setPoint +0;
+    }
+
     public void periodic() {
-        if (gamepad.left_stick_y < 0) {
-            if (setPoint >= 3100) {
+
+        if (-gamepad.left_stick_y > 0) {
+            if (setPoint >= 3000) {
             } else {
-                setPoint = setPoint + 6;
+                sube();
             }
-        } else if (gamepad.left_stick_y > 0) {
+        } else if (-gamepad.left_stick_y < 0) {
             if (setPoint <= 2) {
             } else {
-                setPoint = setPoint - 6;
+                baja();
             }
         } else if (gamepad.y) {
-            setPoint = 1;
-        } else if (gamepad.x) {
-            setPoint = 3100;
+            alpiso();
+        } else if (gamepad.y || gamepad.dpad_up) {
+            parriba();
         } else if (gamepad.dpad_down) {
-            viperL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            viperL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            setPoint = 0.5;
+            viperR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            viperR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            setPoint = 2;
         } else if (gamepad.back) {
             setPoint = setPoint - 2;
-        } else {
-            setPoint = setPoint + 0;
+        } else{
+            PURPLEEE();
         }
-
-
-
-
         pid.setSetpoint(setPoint);//valor deseado
-        pidOutput = pid.getOutput(viperL.getCurrentPosition());//valor actual
+        pidOutput = pid.getOutput(viperR.getCurrentPosition());//valor actual
         viperL.setPower(pidOutput);
         viperR.setPower(pidOutput);
         telemetry.addData("PID Output", pidOutput);
-        telemetry.addData("setPointL", viperL.getCurrentPosition());
+        telemetry.addData("setPointR", viperR.getCurrentPosition());
 
     }
 }

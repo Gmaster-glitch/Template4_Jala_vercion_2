@@ -21,18 +21,23 @@ public class MecanumDrive27788 extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "BR");
 
         // Establecer la dirección de los motores si es necesario
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        //backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Esperar a que se presione el botón de inicio
         waitForStart();
 
         while (opModeIsActive()) {
+            telemetry.addData("FL",frontLeft);
+            telemetry.addData("FR",frontRight);
+            telemetry.addData("Bl",backLeft);
+            telemetry.addData("BR",backRight);
+
             // Obtener valores de los joysticks
             double x = gamepad1.left_stick_x;  // Eje X del joystick izquierdo
             double y = -gamepad1.left_stick_y; // Eje Y del joystick izquierdo (invertido)
-            double rotation = gamepad1.right_stick_x; // Eje X del joystick derecho
+            double rotation = gamepad1.right_stick_x*-1; // Eje X del joystick derecho
             /*if (gamepad1.a) {
                 frontLeft.setPower(0.5);
             } else if (gamepad1.b) {

@@ -9,12 +9,24 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 public class AutonomousExample extends LinearOpMode {
     @Override
     public void runOpMode() {
-        MecanumDriveSubsystem drive = new MecanumDriveSubsystem(hardwareMap, gamepad1);
+        MecanumDriveSubsystem drive = new MecanumDriveSubsystem(hardwareMap, gamepad1, telemetry);
+
+        
         waitForStart();
-        drive.moveRight();
+        drive.moveUp();
+        sleep(400);
+        drive.stop();
+        sleep(1000);
+        drive.moveDown();
+        sleep(400);
+        drive.stop();
         sleep(1000);
         drive.moveLeft();
-        sleep(1000);
+        sleep(500);
+        drive.stop();
+        sleep(500);
+        drive.moveUp();
+        sleep(500);
         drive.stop();
     }
 

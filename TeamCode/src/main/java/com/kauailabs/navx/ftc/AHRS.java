@@ -154,8 +154,8 @@ public class AHRS {
     AHRSProtocol.BoardID board_id;
     IMUProtocol.GyroUpdate raw_data_update;
 
-    protected AHRS(NavxMicroNavigationSensor sensor,
-                   DeviceDataType data_type, int update_rate_hz) {
+    public AHRS(NavxMicroNavigationSensor sensor,
+                DeviceDataType data_type, int update_rate_hz) {
         this.callbacks = new IDataArrivalSubscriber[MAX_NUM_CALLBACKS];
         this.sensor = sensor;
         this.update_rate_hz = update_rate_hz;

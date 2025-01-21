@@ -1,17 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-
-
 import static org.firstinspires.ftc.teamcode.utils.calculateRotation;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import org.firstinspires.ftc.teamcode.libs.MiniPID;
+import org.firstinspires.ftc.teamcode.subsystems.GyroscopeSubsystem;
+
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 
 import java.lang.Math;
 
@@ -26,6 +26,8 @@ public class AdvancedMecanumSubsystem {
     public DcMotor BackLeftMotor;
     public DcMotor BackRightMotor;
 
+    public org.firstinspires.ftc.teamcode.libs.MiniPID pid = new MiniPID(0.1,0,0);;
+
     double frontRightPower=0;
     double backLeftPower=0;
     double frontLeftPower=0;
@@ -34,8 +36,8 @@ public class AdvancedMecanumSubsystem {
     public double targetAngle=0;
     private double lastDir;
 
-    private double radians = 45;
-    
+    private double radians=45;
+
     private Telemetry telemetry;
 
     private double timeOffset=0;
@@ -47,36 +49,29 @@ public class AdvancedMecanumSubsystem {
     public double speed=1;
     public double baseSpeed=1;
 
-    GyroscopeSubsystem gyroscope;
+    PinpointSubsystem gyroscope;
 
     public Gamepad gamepad;
-
 
     public AdvancedMecanumSubsystem(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad){
         this.hardwareMap=hardwareMap;
         this.telemetry = telemetry;
-        /*
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");//
-        FrontRightMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        BackLeftMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        BackRightMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        */
-        
-        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FL");//
+
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FL");
         FrontRightMotor = hardwareMap.get(DcMotor.class, "FR");
         BackLeftMotor = hardwareMap.get(DcMotor.class, "BL");
         BackRightMotor = hardwareMap.get(DcMotor.class, "BR");
+
+        FrontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        BackLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FrontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BackRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        gyroscope = GyroscopeSubsystem.getInstance(hardwareMap);
-
-        FrontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        BackLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BackRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        gyroscope = new PinpointSubsystem(hardwareMap);
 
         this.gamepad = gamepad;
     }
@@ -92,7 +87,6 @@ public class AdvancedMecanumSubsystem {
                 gyroscope.reset();
                 updateTargetAngle();
             }
-
         }
         if(gamepad.y&&false){
             FrontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -127,7 +121,7 @@ public class AdvancedMecanumSubsystem {
             }
         }
         //movimiento main
-        arcadeDrive(gamepad.left_stick_x,-gamepad.left_stick_y,gamepad.right_stick_x,speed,gyr);
+        arcadeDrive(gamepad.left_stick_y,-gamepad.left_stick_x,-gamepad.right_stick_x,speed,gyr);
 
         //baja la velocidad depende de qué tan presionado está el right trigger
         if(gamepad.right_trigger>0.1){
@@ -149,46 +143,46 @@ public class AdvancedMecanumSubsystem {
     //Ignorar por ahora, es para no crear 2 subsistemas accidentalmente
     public static AdvancedMecanumSubsystem getInstance(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {
         if (instance == null) {
-          instance = new AdvancedMecanumSubsystem(hardwareMap,telemetry, gamepad);
+            instance = new AdvancedMecanumSubsystem(hardwareMap,telemetry, gamepad);
         }
         return instance;
-      }
-      //para autónomo
-      public void moveY(double speed) {
-
-          frontLeftPower= -speed*(1);
-          backLeftPower = -speed*(1);
-          backRightPower = -speed*(1);
-          frontRightPower =  -speed*(1);
-
-          setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-      }
+    }
     //para autónomo
-      public void moveX(double speed) {
-          frontLeftPower= speed*(1);
-          backLeftPower = -speed*(1);
-          backRightPower = -speed*(1);
-          frontRightPower =  speed*(1);
+    public void moveY(double speed) {
 
-          setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-      }
+        frontLeftPower= -speed*(1);
+        backLeftPower = -speed*(1);
+        backRightPower = -speed*(1);
+        frontRightPower =  -speed*(1);
+
+        setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+    }
     //para autónomo
-      public void moveR(double speed) {
-          frontLeftPower= -speed*(1);
-          backLeftPower = -speed*(1);
-          backRightPower = speed*(1);
-          frontRightPower = speed*(1);
+    public void moveX(double speed) {
+        frontLeftPower= speed*(1);
+        backLeftPower = -speed*(1);
+        backRightPower = -speed*(1);
+        frontRightPower =  speed*(1);
 
-          setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-      }
+        setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+    }
+    //para autónomo
+    public void moveR(double speed) {
+        frontLeftPower= -speed*(1);
+        backLeftPower = -speed*(1);
+        backRightPower = speed*(1);
+        frontRightPower = speed*(1);
 
-      //movimiento main
-      private void arcadeDrive(double x, double y, double r, double speed, double degrees) {
+        setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+    }
+
+    //movimiento main
+    private void arcadeDrive(double x, double y, double r, double speed, double degrees) {
         //x: movimiento lateral
         //y: movimiento vertical
-          //r: rotación -1 a 1
+        //r: rotación -1 a 1
         //speed: velocidad
-          //degrees: ángulo actual del giroscopio
+        //degrees: ángulo actual del giroscopio
 
         telemetry.addData("targetAngle",targetAngle);
 
@@ -196,34 +190,34 @@ public class AdvancedMecanumSubsystem {
         if(Math.abs(x)<0.15){
             x=0;
         }
-          if(Math.abs(y)<0.15){
-              y=0;
-          }
-          //si no se mueve el joystick derecho por medio segundo, cambia r para que el robot apunte al targetAngle, si se mueve, rota deacuerdo al joystick y actualiza el targetAngle al ángulo actual
-          if(true) {
-              lastDir = degrees;
-              if (Math.abs(r)>0.1||(System.currentTimeMillis() - timeOffset < 500&&true)) {
+        if(Math.abs(y)<0.15){
+            y=0;
+        }
+        //si no se mueve el joystick derecho por medio segundo, cambia r para que el robot apunte al targetAngle, si se mueve, rota deacuerdo al joystick y actualiza el targetAngle al ángulo actual
+        if(true) {
+            lastDir = degrees;
+            if (Math.abs(r)>0.1||(System.currentTimeMillis() - timeOffset < 500&&true)) {
 
-                  telemetry.addData("target",targetAngle);
-                  telemetry.addData("gyrro",degrees);
+                telemetry.addData("target",targetAngle);
+                telemetry.addData("gyrro",degrees);
 
-                  targetAngle = degrees;
-                    if(Math.abs(r)>0.1){
-                        timeOffset = System.currentTimeMillis();
-                    }
+                targetAngle = degrees;
+                if(Math.abs(r)>0.1){
+                    timeOffset = System.currentTimeMillis();
+                }
 
-              }else{
-                  angularError = calculateRotation((int) degrees, (int) targetAngle);
-                  telemetry.addData("angularError",angularError);
-                  double angularThreshold = 10;
-                  //no rota automáticamente si el error es menor a 10 grados
-                  if(Math.abs(angularError)>angularThreshold){
-                      //debería de ser un pid
-                      r=angularError*0.5;
-                  }
-              }
+            }else{
+                angularError = calculateRotation((int) degrees, (int) targetAngle);
+                telemetry.addData("angularError",angularError);
+                double angularThreshold = 10;
+                //no rota automáticamente si el error es menor a 10 grados
+                if(Math.abs(angularError)>angularThreshold){
+                    //debería de ser un pid
+                    r=angularError*0.5;
+                }
+            }
 
-          }
+        }
 
         //cambia el ángulo de -180 180, a 0 360
         if(degrees<0){
@@ -236,12 +230,12 @@ public class AdvancedMecanumSubsystem {
         double xmod;
         double ymod;
 
-          //convierte movimiento X y Y del robot calculado deacuerdo al ángulo del girosocpio(para que el frente del driver sea el frente del robot
-          double cosine=Math.cos(Math.toRadians(degrees));
-         double sine=Math.sin(Math.toRadians(degrees));
+        //convierte movimiento X y Y del robot calculado deacuerdo al ángulo del girosocpio(para que el frente del driver sea el frente del robot
+        double cosine=Math.cos(Math.toRadians(degrees));
+        double sine=Math.sin(Math.toRadians(degrees));
 
-        xmod = cosine * x - sine * y; // cos(°) sin(°)
-        ymod = cosine * y + sine * x;
+        xmod = cosine * x + sine * y; // cos(°) sin(°)
+        ymod = cosine * y - sine * x;
 
         telemetry.addData("radians", Math.toRadians(degrees));
         telemetry.addData("cosine", cosine);
@@ -258,16 +252,16 @@ public class AdvancedMecanumSubsystem {
         backRightPower=0;
 
         //movimiento de los motores deacuerdo a posición y el targetAngle calculado(r)
-          //la formula del movimiento sin giroscopio utiliza solo estas 5 líneas
-          backLeftPower = speed*(x - y - r);
-          backRightPower = speed*(y + x - r);
-          frontRightPower =  speed*(y - x - r);
-          frontLeftPower= -(y + x + r)*speed;
+        //la formula del movimiento sin giroscopio utiliza solo estas 5 líneas
+        backLeftPower = speed*(x - y - r);
+        backRightPower = speed*(y + x - r);
+        frontRightPower =  speed*(y - x - r);
+        frontLeftPower= -(y + x + r)*speed;
 
         setMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
 
-        
-}
+
+    }
     public void setMotors(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower){
         telemetry.addData("frontLeftPower", frontLeftPower);
         telemetry.addData("frontRightPower", frontRightPower);
@@ -301,7 +295,5 @@ public class AdvancedMecanumSubsystem {
             targetAngle=targetAngle-360;
         }
     }
-
-
 
 }

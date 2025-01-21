@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.hardware.kauailabs.NavxMicroNavigationSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.kauailabs.navx.ftc.AHRS;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 
 public class GyroscopeSubsystem {
 
@@ -16,11 +18,11 @@ public class GyroscopeSubsystem {
 
     public static GyroscopeSubsystem getInstance(HardwareMap hardwareMap){
         if (instance == null) {
-            instance = new GyroscopeSubsystem(hardwareMap);
+            instance = new GyroscopeSubsystem(hardwareMap, telemetry);
         }
         return instance;
     } //getinstance
-    public GyroscopeSubsystem(HardwareMap hardwareMap){
+    public GyroscopeSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
         navx = AHRS.getInstance(hardwareMap.get(NavxMicroNavigationSensor.class, "navx"),
                 AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);

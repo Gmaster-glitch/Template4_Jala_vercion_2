@@ -1,21 +1,50 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Arm {
     private Gamepad gamepad;
-    private DcMotor armMotor;
+    private Servo armMotorL;
+    boolean debounce = true;
     private Telemetry telemetry;
     public Arm(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {//motor
         this.gamepad = gamepad;
-        armMotor = hardwareMap.get(DcMotor.class,"Arm");
+        this.telemetry = telemetry;
+        armMotorL = hardwareMap.get(Servo.class,"ArmL");
+
     }
 
-    public void periodic(){
+    public void disableperiodic () {
+        telemetry.addData("Arml", armMotorL.getPosition());
+    }
 
+    public void abajo () {
+        armMotorL.setPosition(1);
+    }
+
+    public void arriba () {
+        armMotorL.setPosition(0.41);
+    }
+
+    public void suelta () {
+        armMotorL.setPosition(0.67);
+    }
+
+    public void periodic() {
+        telemetry.addData("debounce",debounce);
+
+        if (gamepad.a) {
+            abajo();
+        } else if (gamepad.b) {
+            arriba();
+        } else if (gamepad.x) {
+            suelta();
+        }
     }
 }
