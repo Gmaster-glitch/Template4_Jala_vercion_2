@@ -12,7 +12,7 @@ public class ViperslidePIDSubsystem {
     private double pidOutput;
     private MiniPID pid;
     private Telemetry telemetry;
-    private DcMotor viperR;
+    public DcMotor viperR;
     private DcMotor viperL;
     public double setPoint = 1;
     private Gamepad gamepad;
@@ -43,6 +43,9 @@ public class ViperslidePIDSubsystem {
         //telemetry.addData()
 
     }
+    public void specimen2 () {
+        setPoint = 1900;
+    }
 
     public void parriba () {
         setPoint = 2450;
@@ -50,6 +53,15 @@ public class ViperslidePIDSubsystem {
 
     public void alpiso () {
         setPoint = 2;
+    }
+
+    public void pid () {
+        pid.setSetpoint(setPoint);//valor deseado
+        pidOutput = pid.getOutput(viperR.getCurrentPosition());//valor actual
+        viperL.setPower(pidOutput);
+        viperR.setPower(pidOutput);
+        telemetry.addData("PID Output", pidOutput);
+        telemetry.addData("setPointR", viperR.getCurrentPosition());
     }
 
     public void baja () {
@@ -89,12 +101,6 @@ public class ViperslidePIDSubsystem {
         } else{
             PURPLEEE();
         }
-        pid.setSetpoint(setPoint);//valor deseado
-        pidOutput = pid.getOutput(viperR.getCurrentPosition());//valor actual
-        viperL.setPower(pidOutput);
-        viperR.setPower(pidOutput);
-        telemetry.addData("PID Output", pidOutput);
-        telemetry.addData("setPointR", viperR.getCurrentPosition());
 
     }
 }

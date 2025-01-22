@@ -53,6 +53,7 @@ public class Voltec27788 extends LinearOpMode {
             //subsystem.periodic();
             //drive.teleopPeriodic();
             viper.periodic();
+            viper.pid();
             //test.periodic();
             telemetry.update();//actualiza la telemetría en la pantalla(agregada con .addData)
             FtcDashboard.getInstance().getTelemetry().update();

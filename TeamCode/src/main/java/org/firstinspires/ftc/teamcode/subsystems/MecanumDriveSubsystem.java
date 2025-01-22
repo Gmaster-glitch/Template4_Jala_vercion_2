@@ -24,6 +24,7 @@ public class MecanumDriveSubsystem {
     //private DcMotor y;
     //String mode = "Alan";
     double r = 0;
+    double mspeed = 0.5;
     //private GyroscopeSubsystem navx;
 
 
@@ -104,16 +105,16 @@ public class MecanumDriveSubsystem {
     }
 
     public void moveDown(){
-        setMotors(-1,-1,-1,-1);
+        setMotors(-mspeed,-mspeed,-mspeed,-mspeed);
     }
     public void moveUp(){
-        setMotors(1,1,1,1);
+        setMotors(mspeed,mspeed,mspeed,mspeed);
     }
     public void moveLeft(){
-        setMotors(-1,1,1,-1);
+        setMotors(-mspeed,mspeed,mspeed,-mspeed);
     }
     public void moveRight(){
-        setMotors(1,-1,-1,1);
+        setMotors(mspeed,-mspeed,-mspeed,mspeed);
     }
 
     public void stop(){
@@ -121,11 +122,11 @@ public class MecanumDriveSubsystem {
     }
 
     public void rotateLeft () {
-        setMotors(1, -1, 1, -1);
+        setMotors(mspeed, -mspeed, speed, -speed);
     }
 
     public void rotateRight () {
-        setMotors(-1, 1, -1, 1);
+        setMotors(-mspeed, mspeed, -mspeed, mspeed);
     }
 
     public void setMotors(double powerFrontLeft, double powerFrontRight, double powerBackLeft, double powerBackRight){
