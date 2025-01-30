@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @TeleOp(name="Mecanum Drive")
 public class MecanumDrive27788 extends LinearOpMode {
     private DcMotor frontLeft;
@@ -14,6 +16,11 @@ public class MecanumDrive27788 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        GoBildaPinpointDriver gps = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        gps.initialize();
+        gps.resetPosAndIMU();
+        gps.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         // Inicializar los motores
         frontLeft = hardwareMap.get(DcMotor.class, "FL");
         frontRight = hardwareMap.get(DcMotor.class, "FR");
@@ -33,6 +40,9 @@ public class MecanumDrive27788 extends LinearOpMode {
             telemetry.addData("FR",frontRight);
             telemetry.addData("Bl",backLeft);
             telemetry.addData("BR",backRight);
+            telemetry.addData("X",gps.getPosition().getX(DistanceUnit.INCH));
+            telemetry.addData("Y",gps.getPosition().getY(DistanceUnit.INCH));
+            gps.update();
 
             // Obtener valores de los joysticks
             double x = gamepad1.left_stick_x;  // Eje X del joystick izquierdo

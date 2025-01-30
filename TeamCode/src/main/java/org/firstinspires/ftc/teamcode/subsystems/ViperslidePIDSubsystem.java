@@ -65,15 +65,19 @@ public class ViperslidePIDSubsystem {
     }
 
     public void baja () {
-        setPoint = setPoint - 5.5;
+        setPoint = setPoint - 7;
     }
 
     public void sube () {
-        setPoint = setPoint + 5.5;
+        setPoint = setPoint + 7;
     }
 
     public void PURPLEEE () {
         setPoint = setPoint +0;
+    }
+
+    public void canastabaja () {
+        setPoint = 1660;
     }
 
     public void periodic() {
@@ -88,9 +92,7 @@ public class ViperslidePIDSubsystem {
             } else {
                 baja();
             }
-        } else if (gamepad.y) {
-            alpiso();
-        } else if (gamepad.y || gamepad.dpad_up) {
+        } else if (gamepad.b && gamepad.dpad_up) {
             parriba();
         } else if (gamepad.dpad_down) {
             viperR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -98,9 +100,16 @@ public class ViperslidePIDSubsystem {
             setPoint = 2;
         } else if (gamepad.back) {
             setPoint = setPoint - 2;
-        } else{
+        } else if (gamepad.dpad_up && gamepad.x) {
+            specimen2();
+        }else if (gamepad.left_bumper) {
+                baja();
+        } else if (gamepad.dpad_up && gamepad.a){
+            canastabaja();
+        } else if (gamepad.y) {
+            alpiso();
+        } else {
             PURPLEEE();
         }
-
     }
 }

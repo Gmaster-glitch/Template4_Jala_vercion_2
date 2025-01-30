@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //import org.firstinspires.ftc.teamcode.subsystems.AdvancedMecanumSubsystem;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Gancho;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -28,6 +29,10 @@ public class Voltec27788 extends LinearOpMode {
         //SubsystemTemplate subsystem = new SubsystemTemplate(hardwareMap,telemetry,gamepad1);
         //AdvancedMecanumSubsystem advance = new AdvancedMecanumSubsystem(hardwareMap, telemetry, gamepad1);
         ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry, hardwareMap, gamepad2);//Listo
+        GoBildaPinpointDriver gps = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        gps.initialize();
+        gps.resetPosAndIMU();
+        gps.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
 
         while (opModeInInit()) {
@@ -55,6 +60,9 @@ public class Voltec27788 extends LinearOpMode {
             viper.periodic();
             viper.pid();
             //test.periodic();
+            telemetry.addData("X",gps.getPosition().getX(DistanceUnit.INCH));
+            telemetry.addData("Y",gps.getPosition().getY(DistanceUnit.INCH));
+            gps.update();
             telemetry.update();//actualiza la telemetría en la pantalla(agregada con .addData)
             FtcDashboard.getInstance().getTelemetry().update();
         }

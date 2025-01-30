@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.libs.MiniPID;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 public class MecanumDriveSubsystem {
@@ -25,7 +27,11 @@ public class MecanumDriveSubsystem {
     //String mode = "Alan";
     double r = 0;
     double mspeed = 0.5;
+    double lento = 0.3;
     //private GyroscopeSubsystem navx;
+
+    public MiniPID gyrPid;
+
 
 
     public MecanumDriveSubsystem(HardwareMap hardwareMap, Gamepad gamepad, Telemetry telemetry) {
@@ -42,6 +48,7 @@ public class MecanumDriveSubsystem {
         BR = hardwareMap.get(DcMotor.class, "BR");
         //y = hardwareMap.get(DcMotor.class, "y");
 
+
         //navx = GyroscopeSubsystem.getInstance(hardwareMap);
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
         //BL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -52,12 +59,16 @@ public class MecanumDriveSubsystem {
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        gyrPid = new MiniPID(0.01, 0, 0);
+        gyrPid.setOutputLimits(-0.5, 0.5);
     }
 
 
 
 
     public void periodic() {
+
 
 
         double x = (gamepad.right_bumper ? 1 : 0) - (gamepad.left_bumper ? 1 : 0);
@@ -105,7 +116,7 @@ public class MecanumDriveSubsystem {
     }
 
     public void moveDown(){
-        setMotors(-mspeed,-mspeed,-mspeed,-mspeed);
+        setMotors(-0.4,-0.4,-0.4,-0.4);
     }
     public void moveUp(){
         setMotors(mspeed,mspeed,mspeed,mspeed);
@@ -121,6 +132,10 @@ public class MecanumDriveSubsystem {
         setMotors(0,0,0,0);
     }
 
+    public void Lento () {
+        setMotors(lento, lento, lento, lento);
+    }
+
     public void rotateLeft () {
         setMotors(mspeed, -mspeed, speed, -speed);
     }
@@ -129,13 +144,13 @@ public class MecanumDriveSubsystem {
         setMotors(-mspeed, mspeed, -mspeed, mspeed);
     }
 
+
     public void setMotors(double powerFrontLeft, double powerFrontRight, double powerBackLeft, double powerBackRight){
         FL.setPower(powerFrontLeft);
         FR.setPower(powerFrontRight);
         BL.setPower(powerBackLeft);
         BR.setPower(powerBackRight);
     }
-
 
 
 

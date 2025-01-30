@@ -25,7 +25,7 @@ public class Arm {
     }
 
     public void abajo () {
-        armMotorL.setPosition(1);
+        armMotorL.setPosition(0.98);
     }
 
     public void arriba () {
@@ -36,15 +36,22 @@ public class Arm {
         armMotorL.setPosition(0.67);
     }
 
+    public void canasta () {
+        armMotorL.setPosition(0.67);
+    }
+
     public void periodic() {
         telemetry.addData("debounce",debounce);
 
-        if (gamepad.a) {
-            abajo();
-        } else if (gamepad.b) {
-            arriba();
-        } else if (gamepad.x) {
-            suelta();
+        if (gamepad.dpad_up) {
+        } else {
+            if (gamepad.a) {
+                abajo();
+            } else if (gamepad.b) {
+                arriba();
+            } else if (gamepad.x) {
+                suelta();
+            }
         }
     }
 }

@@ -50,7 +50,9 @@ public class piston {
         } else if (gamepad.dpad_left) {
             excavadora.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             excavadora.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } else {
+        } else if (gamepad.dpad_right) {
+            centro();
+        }else {
             WAIT();
         }
 
@@ -63,10 +65,14 @@ public class piston {
     }
 
     public void dentro () {
-        setPoint = setPoint + 5;
+        setPoint = setPoint + 15;
     }
 
     public void fuera () {
-        setPoint = setPoint - 5;
+        setPoint = setPoint - 10;
+    }
+
+    public void centro () {
+        setPoint = 0;
     }
 }
