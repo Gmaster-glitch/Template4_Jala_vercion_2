@@ -33,7 +33,7 @@ public class Arm {
     }
 
     public void suelta () {
-        armMotorL.setPosition(0.8);
+        armMotorL.setPosition(0.7);
     }
 
     public void periodic() {
