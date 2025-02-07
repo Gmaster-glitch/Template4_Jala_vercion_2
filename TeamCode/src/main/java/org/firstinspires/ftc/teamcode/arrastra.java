@@ -31,7 +31,7 @@ public class arrastra extends LinearOpMode {
             telemetry.update();
         }
         waitForStart();
-        itadori.arriba();
+        itadori.medio();
 
         while (gps.getPosition().getY(DistanceUnit.INCH) > -11) {
             gps.update();

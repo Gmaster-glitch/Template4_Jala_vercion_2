@@ -17,7 +17,10 @@ public class ViperslidePIDSubsystem {
     public double setPoint = 1;
     private Gamepad gamepad;
     double x = 2/3;
-    String jala = "a";
+    public String jala = "a";
+    public String especimen = "especimen";
+    public String soltar = "soltar";
+    public String piso = "piso";
 
 
     public ViperslidePIDSubsystem(Telemetry telemetry, HardwareMap hardwareMap, Gamepad gamepad) {//inicializa el subsistema
@@ -45,7 +48,7 @@ public class ViperslidePIDSubsystem {
 
     }
     public void specimen2 () {
-        setPoint = 1900;
+        setPoint = 1860;
     }
 
     public void parriba () {
@@ -66,19 +69,19 @@ public class ViperslidePIDSubsystem {
     }
 
     public void baja () {
-        setPoint = setPoint - 10;
+        setPoint = setPoint - 15;
     }
 
     public void sube () {
-        setPoint = setPoint + 10;
+        setPoint = setPoint + 25;
     }
 
     public void PURPLEEE () {
         setPoint = setPoint +0;
     }
 
-    public void canastabaja () {
-        setPoint = 1660;
+    public void suelta () {
+        setPoint = 1350;
     }
 
     public void agarra () {
@@ -92,7 +95,7 @@ public class ViperslidePIDSubsystem {
     public void periodic() {
 
         if (-gamepad.left_stick_y > 0) {
-            if (setPoint >= 3000) {
+            if (setPoint >= 2500) {
             } else {
                 sube();
             }
@@ -101,9 +104,9 @@ public class ViperslidePIDSubsystem {
             } else {
                 baja();
             }
-        } else if (gamepad.b && gamepad.dpad_up) {
+        } /*else if (gamepad.b && gamepad.dpad_up) {
             parriba();
-        } else if (gamepad.dpad_down) {
+        } */else if (gamepad.dpad_down) {
             viperR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             viperR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             setPoint = 2;
@@ -111,9 +114,9 @@ public class ViperslidePIDSubsystem {
             setPoint = setPoint - 2;
         } else if (gamepad.dpad_up && gamepad.x) {
             specimen2();
-        } else if (gamepad.dpad_up && gamepad.a){
+        } /*else if (gamepad.dpad_up && gamepad.a){
             canastabaja();
-        } else if (gamepad.y && gamepad.dpad_up) {
+        } */else if (gamepad.y && gamepad.dpad_up) {
             alpiso();
         } else {
             PURPLEEE();

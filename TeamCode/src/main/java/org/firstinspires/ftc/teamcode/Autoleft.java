@@ -34,7 +34,7 @@ public class Autoleft extends LinearOpMode {
 
         }
         waitForStart();
-        itadori.arriba();
+        itadori.medio();
 
         while (gps.getPosition().getX(DistanceUnit.INCH) < 10) {
             gps.update();

@@ -23,20 +23,24 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.commandbase.command.drive.FollowPathCommand;
+import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.Commandviper;
+import org.firstinspires.ftc.teamcode.common.commandbase.subsystem.OpenClawCommand;
+import org.firstinspires.ftc.teamcode.subsystems.Garra;
 import org.firstinspires.ftc.teamcode.subsystems.ViperslidePIDSubsystem;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
-@Autonomous (name = "dios")
+@Autonomous (name = "Ayudaaaaaaaaaaaaaa")
 public class dios extends LinearOpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-    ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry,hardwareMap, gamepad2);
+    ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry,hardwareMap,gamepad2);
+    Garra garra = new Garra(hardwareMap, telemetry, gamepad2);
     public final Pose inicio = new Pose(9, 55, 0);
-    private final Pose sample1 = new Pose(37, 67, 0);
-    private final Pose recoge1 = new Pose(64, 36, 0);
+    private final Pose sample1 = new Pose(32.74766355140187, 65.49532710280374, 0);
+    private final Pose recoge1 = new Pose(52.93457943925233, 32.971962616822424, 0);
     private final Pose lleva1 = new Pose(16, 23, 0);
     private final Pose recoge2 = new Pose(66, 14, 0);
     private final Pose lleva2 = new Pose(16, 14, 0);
@@ -60,9 +64,15 @@ public class dios extends LinearOpMode {
 
         f.setPose(inicio);
         f.setMaxPower(0.75);
+
+        double pivotVConstant = 13.4/vs.getVoltage();
+
+
         SequentialCommandGroup auto = new SequentialCommandGroup(
                 //primer sample
                 new ParallelCommandGroup(
+                        new Commandviper(viper, viper.especimen),
+                        new OpenClawCommand(garra, true),
                         new FollowPathCommand(f, f.pathBuilder()
                                 .addPath(
                                         new BezierLine(
@@ -73,7 +83,7 @@ public class dios extends LinearOpMode {
                                 .setConstantHeadingInterpolation(0)
                                 .build()
                         )
-                ),
+                )/*,
                 //acomodo
                 new ParallelCommandGroup(
                         new FollowPathCommand(f, f.pathBuilder()
@@ -154,7 +164,7 @@ public class dios extends LinearOpMode {
                         )
                 )
 
-        );
+        */);
         // Wait for start and schedule auto command group
         waitForStart();
         CommandScheduler.getInstance().schedule(auto);

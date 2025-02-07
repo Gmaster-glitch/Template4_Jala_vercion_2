@@ -36,7 +36,7 @@ public class ExampleMecanumTeleOp extends LinearOpMode {
 
         }
         waitForStart();
-        itadori.arriba();
+        itadori.medio();
 
         while (viper.viperR.getCurrentPosition() < 1000) {
             viper.specimen2();

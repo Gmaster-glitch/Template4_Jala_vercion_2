@@ -24,16 +24,16 @@ public class Arm {
         telemetry.addData("Arml", armMotorL.getPosition());
     }
 
-    public void abajo () {
+    public void GUARDA () {
         armMotorL.setPosition(0);
     }
 
-    public void arriba () {
-        armMotorL.setPosition(0.8);
+    public void medio () {
+        armMotorL.setPosition(0.5);
     }
 
     public void suelta () {
-        armMotorL.setPosition(0.7);
+        armMotorL.setPosition(0.8);
     }
 
     public void periodic() {
@@ -41,11 +41,11 @@ public class Arm {
 
         if (gamepad.dpad_up) {
         } else {
-            if (gamepad.a) {
-                abajo();
-            } else if (gamepad.b) {
-                arriba();
+            if (gamepad.b) {
+                GUARDA();
             } else if (gamepad.x) {
+                medio();
+            } else if (gamepad.a) {
                 suelta();
             }
         }

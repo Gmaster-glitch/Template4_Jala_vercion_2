@@ -12,6 +12,8 @@ public class Garra {
     private Servo garra;
     boolean debounce = true;
     private Telemetry telemetry;
+    boolean open = false;
+
 
     public Garra(HardwareMap hardwareMap, Telemetry telemetry, Gamepad gamepad) {//motor
         this.gamepad = gamepad;
@@ -29,7 +31,7 @@ public class Garra {
 
 
     public void periodic() {
-        telemetry.addData("debounce", debounce);
+        telemetry.addData("garra", debounce);
 
         if (gamepad.dpad_up) {
         } else {
@@ -38,13 +40,13 @@ public class Garra {
                     abre();
                     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
                     debounce = false;
-                    while (timer.time() < 1000) {
+                    while (timer.time() < 100) {
                     }
                     } else if (debounce==false) {
                     cierra();
                     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    debounce = false;
-                    while (timer.time() < 1000) {
+                    debounce = true;
+                    while (timer.time() < 100) {
                     }
                 }
             }
