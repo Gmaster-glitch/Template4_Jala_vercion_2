@@ -61,7 +61,8 @@ public class piston {
         pidOutput = pid.getOutput(excavadora.getCurrentPosition());//valor actual
         excavadora.setPower(pidOutput);
         telemetry.addData("PID Output", pidOutput);
-        telemetry.addData("setPoint", excavadora.getCurrentPosition());
+        telemetry.addData("setPoint", setPoint);
+        telemetry.addData("position", excavadora.getCurrentPosition());
     }
 
     public void dentro () {

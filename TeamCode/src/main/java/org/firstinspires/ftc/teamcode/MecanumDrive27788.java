@@ -29,7 +29,7 @@ public class MecanumDrive27788 extends LinearOpMode {
 
         // Establecer la dirección de los motores si es necesario
         frontRight.setDirection(DcMotor.Direction.REVERSE);
-        //backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Esperar a que se presione el botón de inicio

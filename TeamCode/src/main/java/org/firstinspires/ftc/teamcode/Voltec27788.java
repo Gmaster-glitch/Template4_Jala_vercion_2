@@ -10,15 +10,16 @@ import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Gancho;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.Pruebademotores;
 import org.firstinspires.ftc.teamcode.subsystems.ViperslidePIDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.piston;
 
 @TeleOp //dice que el código puede correr en el modo manual
 public class Voltec27788 extends LinearOpMode {
-    static String robotName = "equipo 3";
+    static String robotName = "equipo negro";
     @Override
     public void runOpMode() {
-        Gancho Yūji = new Gancho(hardwareMap, gamepad2, telemetry);//listo
+        //Gancho Yūji = new Gancho(hardwareMap, gamepad2, telemetry);//listo
         piston excavadora = new piston(hardwareMap, gamepad2, telemetry);//ocupa pruba
         //Pruebademotores test = new Pruebademotores(hardwareMap, gamepad1, telemetry);
         //TankDriveSubsystem drive = new TankDriveSubsystem(hardwareMap, gamepad1); //iniciliza el subsistema de tank drive
@@ -29,16 +30,15 @@ public class Voltec27788 extends LinearOpMode {
         //SubsystemTemplate subsystem = new SubsystemTemplate(hardwareMap,telemetry,gamepad1);
         //AdvancedMecanumSubsystem advance = new AdvancedMecanumSubsystem(hardwareMap, telemetry, gamepad1);
         ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry, hardwareMap, gamepad2);//Listo
-        GoBildaPinpointDriver gps = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        gps.initialize();
-        gps.resetPosAndIMU();
-        gps.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        //GoBildaPinpointDriver gps = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        //gps.initialize();
+        //gps.resetPosAndIMU();
+        //gps.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
 
         while (opModeInInit()) {
             arm.disableperiodic();
             viper.disableperiodic();
-            arm.disableperiodic();
             //test.disableperiodic();
             excavadora.disableperiodic();
             telemetry.update();
@@ -51,7 +51,7 @@ public class Voltec27788 extends LinearOpMode {
         while (opModeIsActive()){ //corre mientras el programa este activo
             drive.periodic();//corre el método periodic del subsistema
             arm.periodic();
-            Yūji.periodic();
+            //Yūji.periodic();
             excavadora.peridoic();
             intake.periodic();
             //drive.periodic();
@@ -60,9 +60,12 @@ public class Voltec27788 extends LinearOpMode {
             viper.periodic();
             viper.pid();
             //test.periodic();
-            telemetry.addData("X",gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y",gps.getPosition().getY(DistanceUnit.INCH));
-            gps.update();
+            //telemetry.addData("X",gps.getPosition().getX(DistanceUnit.INCH));
+            //telemetry.addData("Y",gps.getPosition().getY(DistanceUnit.INCH));
+            //gps.update();
+            telemetry.addData("viperL", viper.viperL.getPower());
+            telemetry.addData("viperR", viper.viperR.getPower());
+            telemetry.addData("stick",-gamepad2.left_stick_y);
             telemetry.update();//actualiza la telemetría en la pantalla(agregada con .addData)
             FtcDashboard.getInstance().getTelemetry().update();
         }

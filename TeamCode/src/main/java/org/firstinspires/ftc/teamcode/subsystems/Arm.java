@@ -25,19 +25,15 @@ public class Arm {
     }
 
     public void abajo () {
-        armMotorL.setPosition(0.98);
+        armMotorL.setPosition(0);
     }
 
     public void arriba () {
-        armMotorL.setPosition(0.41);
+        armMotorL.setPosition(0.8);
     }
 
     public void suelta () {
-        armMotorL.setPosition(0.67);
-    }
-
-    public void canasta () {
-        armMotorL.setPosition(0.67);
+        armMotorL.setPosition(0.7);
     }
 
     public void periodic() {

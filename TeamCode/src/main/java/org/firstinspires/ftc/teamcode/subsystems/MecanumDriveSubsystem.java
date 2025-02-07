@@ -51,7 +51,7 @@ public class MecanumDriveSubsystem {
 
         //navx = GyroscopeSubsystem.getInstance(hardwareMap);
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
-        //BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
         //BR.setDirection(DcMotorSimple.Direction.REVERSE);
 
 

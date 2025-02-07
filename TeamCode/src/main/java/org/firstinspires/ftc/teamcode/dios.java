@@ -1,201 +1,170 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.PerpetualCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Constants;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.subsystems.Arm;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.commandbase.command.drive.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ViperslidePIDSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.piston;
 
-//import org.firstinspires.ftc.teamcode.subsystems.AdvancedMecanumSubsystem;
+import pedroPathing.constants.FConstants;
+import pedroPathing.constants.LConstants;
 
-@Autonomous
+@Autonomous (name = "dios")
 public class dios extends LinearOpMode {
+    private Follower follower;
+    private Timer pathTimer, actionTimer, opmodeTimer;
+    private int pathState;
+    ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry,hardwareMap, gamepad2);
+    public final Pose inicio = new Pose(9, 55, 0);
+    private final Pose sample1 = new Pose(37, 67, 0);
+    private final Pose recoge1 = new Pose(64, 36, 0);
+    private final Pose lleva1 = new Pose(16, 23, 0);
+    private final Pose recoge2 = new Pose(66, 14, 0);
+    private final Pose lleva2 = new Pose(16, 14, 0);
+    private final Pose recoge3 = new Pose(66, 8, 0);
+    private final Pose lleva3 = new Pose(16, 8, 0);
+
+    private Path scorePreload, park;
+    private PathChain primera, segunda, tercera, anota2, anota3, anota4, anota5;
+
+
     @Override
     public void runOpMode() {
-        GoBildaPinpointDriver gps = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        gps.initialize();
-        gps.resetPosAndIMU();
+        CommandScheduler.getInstance().reset();
 
-        gps.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        Arm itadori = new Arm(hardwareMap, telemetry, gamepad2);
-        piston excavadora = new piston(hardwareMap, gamepad2, telemetry);
-        MecanumDriveSubsystem drive = new MecanumDriveSubsystem(hardwareMap, gamepad1, telemetry); //iniciliza el subsistema de mecanum drive
-        ViperslidePIDSubsystem viper = new ViperslidePIDSubsystem(telemetry, hardwareMap, gamepad2);//Listo
-        while (opModeInInit()) {
-            gps.getPosition().getX(DistanceUnit.INCH);
-            gps.getPosition().getY(DistanceUnit.INCH);
-            gps.update();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
+        Telemetry telem = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        }
+        VoltageSensor vs = hardwareMap.voltageSensor.iterator().next();
+
+        Constants.setConstants(FConstants.class, LConstants.class);
+        Follower f = new Follower(hardwareMap);
+
+        f.setPose(inicio);
+        f.setMaxPower(0.75);
+        SequentialCommandGroup auto = new SequentialCommandGroup(
+                //primer sample
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierLine(
+                                                new Point(inicio),
+                                                new Point(sample1)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),
+                //acomodo
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(sample1),
+                                                new Point(23.000, 29.000, Point.CARTESIAN),
+                                                new Point(recoge1)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),
+                //acomodo con empuje
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(recoge1),
+                                                new Point(70.000, 20.000, Point.CARTESIAN),
+                                                new Point(lleva1)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),
+                //acomodo 2
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(lleva1),
+                                                new Point(73.000, 27.000, Point.CARTESIAN),
+                                                new Point(recoge2)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),//empuje 2
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(recoge2),
+                                                new Point(lleva2)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),//acomodo3
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(lleva2),
+                                                new Point(72.224, 15.477, Point.CARTESIAN),
+                                                new Point(recoge3)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                ),//empuja3
+                new ParallelCommandGroup(
+                        new FollowPathCommand(f, f.pathBuilder()
+                                .addPath(
+                                        new BezierCurve(
+                                                new Point(recoge3),
+                                                new Point(lleva3)
+                                        )
+                                )
+                                .setConstantHeadingInterpolation(0)
+                                .build()
+                        )
+                )
+
+        );
+        // Wait for start and schedule auto command group
         waitForStart();
-        itadori.arriba();
+        CommandScheduler.getInstance().schedule(auto);
 
-        while (viper.viperR.getCurrentPosition() < 1000) {
-            viper.specimen2();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.update();
+        // Opmode loop
+        while (opModeIsActive()) {
+            f.setMaxPower(10.0 / vs.getVoltage());
+            CommandScheduler.getInstance().run();
+            f.update();
+            f.telemetryDebug(telem);
         }
-
-        while (gps.getPosition().getX(DistanceUnit.INCH) < 28) {
-            gps.update();
-            drive.moveUp();
-            viper.specimen2();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-
-        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        while (timer.time() < 1000) {
-            drive.stop();
-            viper.specimen2();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-
-        while (viper.viperR.getCurrentPosition() > 1000) {
-            viper.setPoint = 1000;
-            viper.pid();
-            excavadora.peridoic();
-            drive.stop();
-            gps.update();
-        }
-
-
-        while (gps.getPosition().getX(DistanceUnit.INCH) > 20) {
-            gps.update();
-            drive.moveDown();
-            viper.alpiso();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getY(DistanceUnit.INCH) < 36) {
-            gps.update();
-            drive.moveRight();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getX(DistanceUnit.INCH) < 48) {
-            gps.update();
-            drive.moveUp();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getY(DistanceUnit.INCH) < 45) {
-            gps.update();
-            drive.moveRight();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getX(DistanceUnit.INCH) > 10) {
-            gps.update();
-            drive.moveDown();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getX(DistanceUnit.INCH) < 48) {
-            gps.update();
-            drive.moveUp();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getY(DistanceUnit.INCH) < 56) {
-            gps.update();
-            drive.moveRight();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getPosition().getX(DistanceUnit.INCH) > 10) {
-            gps.update();
-            drive.moveDown();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        /*while (gps.getPosition().getX(DistanceUnit.INCH) < 15) {
-            drive.moveUp();
-            gps.update();
-            telemetry.addData("X", gps.getPosition().getX(DistanceUnit.INCH));
-            telemetry.addData("Y", gps.getPosition().getY(DistanceUnit.INCH));
-            telemetry.update();
-        }
-        while (gps.getHeading() != 180) {
-            drive.rotateRight();
-            gps.update();
-        }
-
-        while (gps.getPosition().getX(DistanceUnit.INCH) < 10) {
-            drive.Lento();
-            gps.update();
-            viper.setPoint = 1000;
-            viper.pid();
-        }
-        drive.stop();
-        while (viper.viperR.getCurrentPosition() < 1900) {
-            viper.setPoint = 1900;
-            viper.pid();
-        }*/
-
-        while (true) {
-            drive.stop();
-            viper.periodic();
-            viper.pid();
-            excavadora.peridoic();
-            telemetry.addData("X",gps.getPosition().getX(DistanceUnit.INCH) );
-            telemetry.addData("Y",gps.getPosition().getY(DistanceUnit.INCH) );
-            telemetry.update();
-        }
-
-
-
-
-
-        /*AdvancedMecanumSubsystem drive = AdvancedMecanumSubsystem.getInstance(hardwareMap, telemetry, gamepad1);
-        waitForStart();
-        while (opModeIsActive()){
-            drive.teleopPeriodic();
-            telemetry.update();
-            FtcDashboard.getInstance().getTelemetry().update();*/
-
-
     }
 }
-
